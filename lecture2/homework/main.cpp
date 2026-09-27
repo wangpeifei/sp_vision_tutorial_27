@@ -5,23 +5,43 @@
 
 int main()
 {
-    // 初始化相机、yolo类
-    
-    // while (1) {
-        // 调用相机读取图像
+  // 1. 初始化相机和 YOLO 对象
+  io::Camera camera("./configs/yolo.yaml");
+  auto_aim::YOLO yolo("./configs/yolo.yaml");
 
+  cv::Mat img;
+  std::chrono::steady_clock::time_point timestamp;
 
-        // 调用yolo识别装甲板
+  // 2. 实机循环：连续读取相机画面
+  while (true) {
+    // 从相机读取一帧
+    camera.read(img, timestamp);
 
+    if (img.empty()) continue; // 如果没读到，跳过
 
+    // YOLO 识别装甲板
+    auto armors = yolo.detect(img);
 
-        // 显示图像
-        // cv::resize(img, img , cv::Size(640, 480));
-        // cv::imshow("img", img);
-        // if (cv::waitKey(0) == 'q') {
-        //     // break;
-        // }
-    // }
+    // 画绿色框 + 文字
+    for (const auto & armor : armors) {
+      // 画绿色闭合矩形
+      tools::draw_points(img, armor.points, cv::Scalar(0, 255, 0), 2);
+      
+      // 拼出文字（比如 "bluefour"）
+      std::string text = auto_aim::COLORS[armor.color] + auto_aim::ARMOR_NAMES[armor.name];
+      
+      // 在装甲板中心点左上方画字
+      cv::Point text_pos(armor.center.x - 30, armor.center.y - 20); 
+      tools::draw_text(img, text, text_pos, cv::Scalar(0, 255, 0), 2.0, 2);
+    }
 
-    return 0;
+    // 显示画面
+    cv::resize(img, img, cv::Size(1200, 800));
+    cv::imshow("img", img);
+
+    // 按 'q' 键退出循环
+    if (cv::waitKey(1) == 'q') break;
+  }
+
+  return 0;
 }

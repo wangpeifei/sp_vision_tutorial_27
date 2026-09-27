@@ -5,10 +5,15 @@ find_package(yaml-cpp REQUIRED)
 # 创建目标 io
 add_library(io STATIC 
     camera.cpp
+    hikrobot/hikrobot.cpp
 )
 
 # hikrobot
-target_include_directories(io PUBLIC hikrobot/include)
+target_include_directories(io PUBLIC 
+    hikrobot/include
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/tools
+)
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   target_link_directories(io PUBLIC hikrobot/lib/amd64)
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
