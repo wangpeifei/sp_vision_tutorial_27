@@ -238,13 +238,6 @@ void YOLOV5::draw_detections(
 
   if (use_roi_) {
     cv::Scalar green(0, 255, 0);
-    cv::Rect roi_show = roi_;
-    int expand = 15;
-    roi_show.x -= expand;
-    roi_show.y -= expand;
-    roi_show.width += expand * 2;
-    roi_show.height += expand * 2;
-    roi_show &= cv::Rect(0 , 0 , detection.cols , detection.rows);
     cv::rectangle(detection, roi_, green, 2);
   }
   // cv::resize(detection, detection, {}, 0.5, 0.5);  // 显示时缩小图片尺寸
