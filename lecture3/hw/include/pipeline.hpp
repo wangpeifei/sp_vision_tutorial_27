@@ -41,4 +41,6 @@ private:
     Statistics statistics_;
     std::thread producer_;
     std::vector<std::thread> workers_;
+
+    bool started_ = false;
 };

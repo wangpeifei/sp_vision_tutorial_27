@@ -37,11 +37,18 @@ Pipeline::Pipeline(std::unique_ptr<FrameSource> source, PipelineConfig config)
 
 Pipeline::~Pipeline()
 {
+    wait();
     // TODO: Make sure Pipeline never destroys running threads.
 }
 
 void Pipeline::start()
 {
+    if (started_)
+    {
+        return; // 已经启动过了，直接返回，避免重复创建线程
+    }
+    started_ = true;
+    
     std::filesystem::create_directories(config_.output_directory);
     workers_.reserve(static_cast<std::size_t>(config_.worker_count));
     for (int i = 0; i < config_.worker_count; ++i)
